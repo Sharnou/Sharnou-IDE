@@ -1,0 +1,33 @@
+{
+  "schema": "sharnou-ide-engine-integration/1",
+  "project_id": "honour-war",
+  "canonical": true,
+  "ide": {
+    "id": "Sharnou-IDE",
+    "role": "exclusive-authoring-and-runtime-controller",
+    "repository": "https://github.com/Sharnou/Sharnou-IDE"
+  },
+  "engine": {
+    "id": "SharnouEngine",
+    "role": "exclusive-game-runtime",
+    "repository": "https://github.com/Sharnou/Sharnou-Engine"
+  },
+  "protocol": "Sharnou Project Protocol (SPP)",
+  "handoff": ["canonical-identity", "spp-source", "spp-bytecode", "runtime-test", "runtime-launch"],
+  "visual_policy": {
+    "generated_raster": ".AVIF",
+    "accepted_generated_raster": [".AVIF"],
+    "rejected_generated_raster": [".PNG", ".JPG", ".JPEG", ".WEBP", ".GIF", ".BMP", ".TGA", ".DDS"]
+  },
+  "external_tool_policy": {
+    "downloads": false,
+    "bootstrap": false,
+    "forbidden": ["Visual Studio", "MSBuild", "Windows SDK", "CMake", "vcpkg", "Unity", "Unreal Engine", "external programming tools"]
+  },
+  "legacy_ide_policy": {
+    "automatic_metadata_conversion": true,
+    "target": "Sharnou-IDE SPP",
+    "legacy_execution": false,
+    "legacy_toolchain_execution": false
+  }
+}
