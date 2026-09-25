@@ -1,0 +1,37 @@
+{
+  "schema": "sharnou-engine-contract/1",
+  "engine_id": "SharnouEngine",
+  "engine_name": "Sharnou Engine",
+  "game": "Honour War",
+  "ide_id": "Sharnou-IDE",
+  "runtime": {
+    "platform": "Windows 64-bit",
+    "graphics": "Direct3D 11 bootstrap",
+    "language": "C++20",
+    "style": "3D HD MMORPG/ARPG",
+    "movement": "Ragnarok-style click-to-move; no WASD"
+  },
+  "runtime_candidates": [
+    "Build/Runtime/SharnouEngine.exe",
+    "Engine/SharnouEngine/bin/SharnouEngine.exe",
+    "Tools/SharnouIDE/runtime/SharnouEngine.exe"
+  ],
+  "session_environment": {
+    "SHARNOU_IDE_SESSION": "1",
+    "SHARNOU_IDE_REPOSITORY": "https://github.com/Sharnou/Sharnou-IDE"
+  },
+  "forbidden_dependencies": [
+    "Visual Studio",
+    "MSBuild",
+    "Windows SDK development installation",
+    "CMake",
+    "vcpkg",
+    "Unity",
+    "Unreal Engine",
+    "automatic external programming-tool downloads"
+  ],
+  "asset_intake": ["FBX", "OBJ"],
+  "rejected_asset_intake": ["GLB", "GLTF"],
+  "commands": ["--self-test", "--runtime-test=300"],
+  "authority": "Sharnou-IDE is the only project authoring/runtime-control entry point."
+}
