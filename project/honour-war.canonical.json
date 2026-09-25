@@ -1,0 +1,31 @@
+{
+  "schema": "sharnou-canonical-project/1",
+  "project_id": "honour-war",
+  "project_name": "Honour War",
+  "canonical": true,
+  "ide": {
+    "id": "Sharnou-IDE",
+    "repository": "https://github.com/Sharnou/Sharnou-IDE",
+    "authority": "authoritative"
+  },
+  "engine": {
+    "id": "SharnouEngine",
+    "repository": "https://github.com/Sharnou/Sharnou-Engine",
+    "authority": "runtime"
+  },
+  "asset_policy": {
+    "textures": ".AVIF only",
+    "models": ["FBX", "OBJ"],
+    "rejected_models": ["GLB", "GLTF"]
+  },
+  "tool_policy": {
+    "reject": ["Visual Studio", "MSBuild", "Windows SDK", "Unity", "Unreal Engine", "external programming-tool downloads"],
+    "external_ide_authoring": false,
+    "automatic_tool_downloads": false
+  },
+  "migration": {
+    "legacy_ide_conversion": "automatic project-level import",
+    "target": "Sharnou-IDE",
+    "engine_target": "SharnouEngine"
+  }
+}
