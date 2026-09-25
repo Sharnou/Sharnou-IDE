@@ -1,37 +1,60 @@
 {
-  "schema": "sharnou-engine-contract/1",
+  "schema": "sharnou-engine-contract/2",
   "engine_id": "SharnouEngine",
   "engine_name": "Sharnou Engine",
   "game": "Honour War",
   "ide_id": "Sharnou-IDE",
-  "runtime": {
-    "platform": "Windows 64-bit",
+  "authority": "Sharnou-IDE is the sole project-authoring and runtime-control entry point for Honour War.",
+  "platform": {
+    "os": "Windows 10 64-bit",
     "graphics": "Direct3D 11 bootstrap",
-    "language": "C++20",
-    "style": "3D HD MMORPG/ARPG",
-    "movement": "Ragnarok-style click-to-move; no WASD"
+    "game_style": "3D HD MMORPG/ARPG"
+  },
+  "asset_policy": {
+    "texture_format": ".AVIF",
+    "texture_extensions_allowed": [".avif"],
+    "texture_extensions_rejected": [".png", ".jpg", ".jpeg", ".webp", ".tga", ".bmp", ".dds"],
+    "model_intake": ["FBX", "OBJ"],
+    "model_intake_rejected": ["GLB", "GLTF"]
+  },
+  "integration": {
+    "project_id": "honour-war",
+    "canonical_project_repository": "https://github.com/Sharnou/Honour-War",
+    "canonical_ide_repository": "https://github.com/Sharnou/Sharnou-IDE",
+    "engine_repository": "https://github.com/Sharnou/Sharnou-Engine",
+    "session_environment": {
+      "SHARNOU_IDE_SESSION": "1",
+      "SHARNOU_IDE_REPOSITORY": "https://github.com/Sharnou/Sharnou-IDE",
+      "SHARNOU_ENGINE_ID": "SharnouEngine",
+      "SHARNOU_PROJECT_ID": "honour-war"
+    }
   },
   "runtime_candidates": [
     "Build/Runtime/SharnouEngine.exe",
     "Engine/SharnouEngine/bin/SharnouEngine.exe",
     "Tools/SharnouIDE/runtime/SharnouEngine.exe"
   ],
-  "session_environment": {
-    "SHARNOU_IDE_SESSION": "1",
-    "SHARNOU_IDE_REPOSITORY": "https://github.com/Sharnou/Sharnou-IDE"
-  },
   "forbidden_dependencies": [
     "Visual Studio",
     "MSBuild",
-    "Windows SDK development installation",
+    "Windows SDK",
     "CMake",
     "vcpkg",
     "Unity",
     "Unreal Engine",
     "automatic external programming-tool downloads"
   ],
-  "asset_intake": ["FBX", "OBJ"],
-  "rejected_asset_intake": ["GLB", "GLTF"],
+  "build_policy": {
+    "network_downloads": false,
+    "external_tool_bootstrap": false,
+    "external_ide_authoring": false,
+    "compiler_policy": "Sharnou toolchain only; fail closed when the approved self-contained toolchain is unavailable.",
+    "no_os_sdk_dependency": true
+  },
   "commands": ["--self-test", "--runtime-test=300"],
-  "authority": "Sharnou-IDE is the only project authoring/runtime-control entry point."
+  "migration": {
+    "legacy_ide_projects": "Import project metadata into Sharnou-IDE; do not invoke or download the legacy IDE/toolchain.",
+    "automatic_conversion": true,
+    "conversion_target": "Sharnou-IDE + SharnouEngine"
+  }
 }
