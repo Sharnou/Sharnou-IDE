@@ -10,26 +10,25 @@ if ([string]::IsNullOrWhiteSpace($ProjectRoot)) { $ProjectRoot = (Get-Location).
 $ProjectRoot = [IO.Path]::GetFullPath($ProjectRoot)
 $ideRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $compiler = Join-Path $ideRoot "Compile-Spp.ps1"
+$bridge = Join-Path $ideRoot "EngineBridge.ps1"
 $manifest = Join-Path $ProjectRoot "Tools\SharnouIDE\honour-war.spp.json"
 $source = Join-Path $ProjectRoot "Tools\SharnouIDE\project\main.spp"
 $output = Join-Path $ProjectRoot "Build\Runtime\honour-war.sppc.json"
 
-function Find-Engine([string]$root) {
-    @(
-        (Join-Path $root "Build\Runtime\SharnouEngine.exe"),
-        (Join-Path $root "Tools\SharnouIDE\runtime\SharnouEngine.exe"),
-        (Join-Path $root "Engine\SharnouEngine\bin\SharnouEngine.exe")
-    ) | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
-}
-
 function Validate-Contract {
     if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) { throw "Sharnou Project Protocol manifest is missing." }
     $m = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
+    if ($m.project.id -ne "honour-war") { throw "Project identity mismatch." }
     if ($m.ide.id -ne "Sharnou-IDE") { throw "IDE identity mismatch." }
+    if ($m.ide.repository -ne "https://github.com/Sharnou/Sharnou-IDE") { throw "Honour War is not bound to the canonical Sharnou IDE repository." }
     if ($m.engine.id -ne "SharnouEngine") { throw "Engine identity mismatch." }
     if ($m.build_policy.network_downloads -ne $false) { throw "External downloads are forbidden." }
     if ($m.build_policy.external_tool_bootstrap -ne $false) { throw "External tool bootstrap is forbidden." }
-    Write-Host "PASS: Sharnou IDE project contract."
+    $forbidden = @("Visual Studio","MSBuild","Windows SDK","CMake","vcpkg","Unity","Unreal Engine")
+    foreach ($name in $forbidden) {
+        if ($m.forbidden_project_dependencies -notcontains $name) { throw "Required forbidden dependency is missing from project policy: $name" }
+    }
+    Write-Host "PASS: Sharnou IDE -> Sharnou Engine project contract."
 }
 
 function Compile-Project {
@@ -44,13 +43,6 @@ if ($Command -eq "validate") { exit 0 }
 Compile-Project
 if ($Command -eq "compile") { exit 0 }
 
-$engine = Find-Engine $ProjectRoot
-if (-not $engine) { throw "SharnouEngine.exe is not present in configured runtime candidates." }
-$env:SHARNOU_IDE_SESSION = "1"
-Set-Location -LiteralPath $ProjectRoot
-
-switch ($Command) {
-    "self-test" { & $engine "--self-test"; exit $LASTEXITCODE }
-    "runtime-test" { & $engine "--runtime-test=$RuntimeTestSeconds"; exit $LASTEXITCODE }
-    "run" { & $engine; exit $LASTEXITCODE }
-}
+if (-not (Test-Path -LiteralPath $bridge -PathType Leaf)) { throw "Sharnou Engine bridge missing: $bridge" }
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bridge -ProjectRoot $ProjectRoot -Command $Command -RuntimeTestSeconds $RuntimeTestSeconds
+exit $LASTEXITCODE
