@@ -1,0 +1,8 @@
+{
+  "schema": "sharnou-project/1",
+  "project": {"id": "honour-war", "name": "Honour War", "genre": "3D HD MMORPG/ARPG"},
+  "ide": {"id": "Sharnou-IDE", "repository": "https://github.com/Sharnou/Sharnou-IDE", "mode": "authoritative"},
+  "engine": {"id": "SharnouEngine", "source_repository": "https://github.com/Sharnou/Honour-War", "runtime_relative": "Build/Runtime/SharnouEngine.exe"},
+  "forbidden_active_dependencies": ["Visual Studio","MSBuild","Windows SDK","CMake","vcpkg","Unity","Unreal Engine","automatic external programming-tool downloads"],
+  "content_pipeline": ["Visual RAG/reference analysis","Neural4D or Blender processing","FBX/OBJ intake","Sharnou Engine asset validation","runtime validation"]
+}
