@@ -1,5 +1,5 @@
 {
-  "schema": "sharnou-engine-contract/3",
+  "schema": "sharnou-engine-contract/4",
   "engine_id": "SharnouEngine",
   "engine_name": "Sharnou Engine",
   "game": "Honour War",
@@ -11,20 +11,23 @@
     "game_style": "3D HD MMORPG/ARPG"
   },
   "asset_policy": {
-    "visual_asset_mode": "AVIF-only",
-    "texture_format": ".AVIF",
-    "texture_extensions_allowed": [".avif"],
+    "accepted_input_formats": "*",
+    "automatic_conversion": true,
+    "runtime_3d_scene_formats": [".gltf", ".glb"],
+    "runtime_3d_texture_formats": [".ktx2"],
+    "runtime_2d_formats": [".avif"],
+    "glTF_texture_extension": "KHR_texture_basisu",
     "generated_visual_extensions_allowed": [".avif"],
     "visual_extensions_rejected": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".tga", ".dds"],
     "model_intake": ["FBX", "OBJ"],
-    "model_intake_rejected": ["GLB", "GLTF"]
+    "model_intake_rejected_as_runtime": ["FBX", "OBJ"]
   },
   "integration": {
     "project_id": "honour-war",
     "canonical_project_repository": "https://github.com/Sharnou/Honour-War",
     "canonical_ide_repository": "https://github.com/Sharnou/Sharnou-IDE",
     "engine_repository": "https://github.com/Sharnou/Sharnou-Engine",
-    "authoring_to_runtime": "Sharnou-IDE -> SharnouEngine -> Honour War",
+    "authoring_to_runtime": "Sharnou-IDE -> SPP -> SharnouEngine -> Honour War",
     "session_environment": {
       "SHARNOU_IDE_SESSION": "1",
       "SHARNOU_IDE_REPOSITORY": "https://github.com/Sharnou/Sharnou-IDE",
@@ -63,5 +66,5 @@
     "compiler_policy": "Sharnou toolchain only; fail closed when the approved self-contained toolchain is unavailable.",
     "no_os_sdk_dependency": true
   },
-  "commands": ["--self-test", "--runtime-test=300"]
+  "commands": ["--self-test", "--runtime-test=300", "--generate"]
 }
