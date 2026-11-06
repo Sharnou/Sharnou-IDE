@@ -1,0 +1,21 @@
+name: Verify Pinned Sharnou Compiler
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-pin-and-ide:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout IDE
+        uses: actions/checkout@v4
+      - name: Resolve pinned private compiler release and validate IDE
+        shell: powershell
+        env:
+          SHARNOU_COMPILER_READ_TOKEN: ${{ secrets.SHARNOU_COMPILER_READ_TOKEN }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:SHARNOU_COMPILER_READ_TOKEN)) { throw 'Add repository secret SHARNOU_COMPILER_READ_TOKEN with contents:read access to Sharnou/Sharnou-Compiler.' }
+          .\toolchain\Verify-IDE-WithPinnedCompiler.ps1
