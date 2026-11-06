@@ -68,3 +68,17 @@ The IDE must not silently download or install a compiler, SDK, IDE, build system
 The IDE may launch only an already-existing approved SharnouEngine runtime.
 
 A gameplay PASS requires actual executable runtime evidence; static policy validation is not gameplay evidence.
+
+## Pinned Sharnou compiler release
+
+This repository pins compiler release R26.0-R2-R8 in compiler-version.json. The pin is an exact tag and SHA-256, not a floating latest version. The compiler repository is private, so local use and Actions require a fine-grained read-only token for Sharnou/Sharnou-Compiler in the SHARNOU_COMPILER_READ_TOKEN environment variable or repository secret.
+
+Windows PowerShell 5.1 commands:
+
+    $env:SHARNOU_COMPILER_READ_TOKEN = '<read-only token>'
+    .\toolchain\Resolve-PinnedSharnouCompiler.ps1
+    .\toolchain\Verify-IDE-WithPinnedCompiler.ps1
+
+The second command resolves and hashes the compiler archive, validates IDE policy, and compiles the existing SPP authoring file. It does not produce SharnouIDE.exe: the current IDE is PowerShell plus SPP, neither of which is compiled by the R26.0 .sharnou bootstrap compiler. See compiler-version.json for this explicit source-language boundary.
+
+Run the manual workflow: Actions -> Verify Pinned Sharnou Compiler -> Run workflow. Add SHARNOU_COMPILER_READ_TOKEN under repository Actions secrets first.
