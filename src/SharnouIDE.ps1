@@ -11,10 +11,10 @@ $ideRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $compiler = Join-Path $ideRoot "Compile-Spp.ps1"
 $converter = Join-Path $ideRoot "Convert-All-IDE-Projects.ps1"
 $bridge = Join-Path $ideRoot "EngineBridge.ps1"
-$manifest = Join-Path $ProjectRoot "ToolsSharnouIDEhonour-war.spp.json"
-$integration = Join-Path $ProjectRoot "ToolsSharnouIDEsharnou-ide-engine.integration.json"
-$source = Join-Path $ProjectRoot "ToolsSharnouIDEprojectmain.spp"
-$output = Join-Path $ProjectRoot "BuildRuntimehonour-war.sppc.json"
+$manifest = Join-Path $ProjectRoot "Tools\SharnouIDE\honour-war.spp.json"
+$integration = Join-Path $ProjectRoot "Tools\SharnouIDE\sharnou-ide-engine.integration.json"
+$source = Join-Path $ProjectRoot "Tools\SharnouIDE\project\main.spp"
+$output = Join-Path $ProjectRoot "Build\Runtime\honour-war.sppc.json"
 
 function Validate-Contract {
     if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) { throw "Sharnou Project Protocol manifest is missing." }
