@@ -16,6 +16,9 @@ jobs:
       - name: Validate IDE stack policy
         shell: powershell
         run: .\ci\sharnou-ide-policy.ps1
+      - name: Test IDE and EngineBridge path resolution
+        shell: powershell
+        run: .\ci\test-sharnou-ide-paths.ps1
       - name: Validate AVIF-only visual policy
         shell: powershell
         run: .\ci\sharnou-avif-policy.ps1
