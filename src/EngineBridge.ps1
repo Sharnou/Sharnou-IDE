@@ -1,11 +1,11 @@
 param(
     [Parameter(Mandatory=$true)][string]$ProjectRoot,
-    [ValidateSet("self-test","runtime-test","run")][string]$Command = "self-test",
+    [ValidateSet("validate","self-test","runtime-test","run")][string]$Command = "self-test",
     [int]$RuntimeTestSeconds = 300
 )
 $ErrorActionPreference = "Stop"
 $ProjectRoot = [IO.Path]::GetFullPath($ProjectRoot)
-$contractPath = Join-Path $PSScriptRoot "..enginesharnou-engine.contract.json"
+$contractPath = Join-Path $PSScriptRoot "..\engine\sharnou-engine.contract.json"
 if (-not (Test-Path -LiteralPath $contractPath -PathType Leaf)) { throw "Sharnou Engine contract missing: $contractPath" }
 $contract = Get-Content -LiteralPath $contractPath -Raw | ConvertFrom-Json
 if ($contract.engine_id -ne "SharnouEngine") { throw "Engine contract identity mismatch." }
@@ -18,7 +18,7 @@ if (@($contract.asset_policy.runtime_3d_texture_formats) -notcontains ".ktx2") {
 if (@($contract.asset_policy.runtime_2d_formats) -notcontains ".avif") { throw "AVIF runtime visual contract is incomplete." }
 if ($contract.asset_policy.glTF_texture_extension -ne "KHR_texture_basisu") { throw "KHR_texture_basisu contract is missing." }
 
-$manifestPath = Join-Path $ProjectRoot "ToolsSharnouIDEhonour-war.spp.json"
+$manifestPath = Join-Path $ProjectRoot "Tools\SharnouIDE\honour-war.spp.json"
 if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) { throw "Honour War Sharnou Project Protocol manifest missing." }
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 if ($manifest.canonical_identity.project_id -ne "honour-war" -or $manifest.canonical_identity.canonical -ne $true) { throw "Honour War is not identified as the canonical Honour War project." }
@@ -30,6 +30,12 @@ if (@($manifest.asset_format_policy.runtime_3d_scene_formats) -notcontains ".glt
 if (@($manifest.asset_format_policy.runtime_3d_texture_formats) -notcontains ".ktx2") { throw "Honour War KTX2 runtime contract is incomplete." }
 if (@($manifest.asset_format_policy.runtime_2d_formats) -notcontains ".avif") { throw "Honour War AVIF runtime contract is incomplete." }
 if ($manifest.build_policy.network_downloads -ne $false -or $manifest.build_policy.external_tool_bootstrap -ne $false -or $manifest.build_policy.external_ide_authoring -ne $false) { throw "External downloads/bootstrap/IDE authoring are forbidden." }
+
+if ($Command -eq "validate") {
+    if (@($manifest.engine.runtime_candidates).Count -eq 0) { throw "No approved SharnouEngine runtime candidate is configured." }
+    Write-Host "PASS: Sharnou IDE-to-Engine bridge paths and contracts."
+    exit 0
+}
 
 $engine = $null
 foreach ($relative in $manifest.engine.runtime_candidates) {
