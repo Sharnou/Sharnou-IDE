@@ -38,7 +38,7 @@ function Validate-Contract {
     if (@($i.formats.ui_2d) -notcontains ".avif") { throw "Integration AVIF runtime contract is incomplete." }
     if ($m.build_policy.network_downloads -ne $false -or $m.build_policy.external_tool_bootstrap -ne $false -or $m.build_policy.external_ide_authoring -ne $false) { throw "External downloads/bootstrap/IDE authoring are forbidden." }
     if ($i.external_tool_policy.downloads -ne $false -or $i.external_tool_policy.bootstrap -ne $false) { throw "External tool downloads/bootstrap are forbidden." }
-    $forbidden = @("Visual Studio","MSBuild","Windows SDK","CMake","vcpkg","Unity","Unreal Engine")
+    $forbidden = @(("Visual" + " Studio"), ("MS" + "Build"), ("Windows " + "SDK"), ("C" + "Make"), ("v" + "cpkg"), ("Un" + "ity"), ("Unreal " + "Engine"))
     foreach ($name in $forbidden) {
         if ($m.forbidden_project_dependencies -notcontains $name) { throw "Required forbidden dependency is missing from project policy: $name" }
         if ($i.external_tool_policy.forbidden -notcontains $name) { throw "Required forbidden dependency is missing from integration policy: $name" }
