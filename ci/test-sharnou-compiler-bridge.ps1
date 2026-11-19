@@ -31,8 +31,19 @@ function Invoke-IdeNativeCompile {
         '-NativeOutput', $OutputPath,
         '-CompilerRoot', $compilerRootFull
     )
-    & $powerShellPath @processArguments *> $LogPath
-    return [int]$LASTEXITCODE
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        # Expected invalid-source/extension cases deliberately return non-zero.
+        # Keep Windows PowerShell 5.1 from promoting the child process' stderr
+        # NativeCommandError into a terminating error in this test harness.
+        $ErrorActionPreference = 'Continue'
+        & $powerShellPath @processArguments *> $LogPath
+        $processExitCode = [int]$LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+    return $processExitCode
 }
 
 try {
