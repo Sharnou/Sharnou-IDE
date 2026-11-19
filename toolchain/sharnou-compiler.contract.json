@@ -1,0 +1,55 @@
+{
+  "schema": "sharnou-ide-compiler-contract/1",
+  "ide_id": "Sharnou-IDE",
+  "compiler_id": "SharnouCompiler",
+  "compiler_repository": "Sharnou/Sharnou-Compiler",
+  "compiler_repository_url": "https://github.com/Sharnou/Sharnou-Compiler",
+  "compiler_source_commit": "352c65e05524d494970b2d8b52b7089d12d19435",
+  "execution_model": "stage0-powershell-dotnet-bootstrap",
+  "host": {
+    "operating_system": "Windows",
+    "powershell_version": "5.1",
+    "process_architecture": "x64"
+  },
+  "bootstrap_compiler": {
+    "path": "Stage0/SharnouCompiler.ps1",
+    "git_blob_sha1": "ee01ef77b068df5d149934fbf463c43b34c54bf3",
+    "native_compiler_executable": false,
+    "self_hosted": false
+  },
+  "pe_verifier": {
+    "path": "Tools/SharnouPEVerify.ps1",
+    "git_blob_sha1": "3606b57920043882a2277ad41fd0e0578156944a"
+  },
+  "language": {
+    "source_extension": ".sharnou",
+    "source_encoding": "ASCII",
+    "verified_milestone": "7A",
+    "verified_features": [
+      "if",
+      "else",
+      "while",
+      "signed_integer_comparisons"
+    ],
+    "not_yet_supported": [
+      "structs",
+      "pointers",
+      "arrays",
+      "function_pointers",
+      "self_hosted_compiler"
+    ]
+  },
+  "output": {
+    "format": "PE32+",
+    "machine": "AMD64",
+    "extension": ".exe",
+    "verification_required": true
+  },
+  "toolchain_policy": {
+    "external_compiler": false,
+    "external_assembler": false,
+    "external_linker": false,
+    "automatic_toolchain_download": false,
+    "automatic_toolchain_installation": false
+  }
+}
