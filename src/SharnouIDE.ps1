@@ -1,13 +1,18 @@
 param(
     [string]$ProjectRoot = "",
-    [ValidateSet("validate","convert","compile","self-test","runtime-test","run")][string]$Command = "validate",
-    [int]$RuntimeTestSeconds = 300
+    [ValidateSet("validate","convert","compile","compile-native","self-test","runtime-test","run")][string]$Command = "validate",
+    [int]$RuntimeTestSeconds = 300,
+    [string]$NativeSource = "",
+    [string]$NativeOutput = "",
+    [string]$CompilerRoot = ""
 )
 
 $ErrorActionPreference = "Stop"
 if ([string]::IsNullOrWhiteSpace($ProjectRoot)) { $ProjectRoot = (Get-Location).Path }
 $ProjectRoot = [IO.Path]::GetFullPath($ProjectRoot)
 $ideRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ideRepositoryRoot = Split-Path -Parent $ideRoot
+$nativeCompilerBridge = Join-Path $ideRepositoryRoot "toolchain\Invoke-SharnouCompiler.ps1"
 $compiler = Join-Path $ideRoot "Compile-Spp.ps1"
 $converter = Join-Path $ideRoot "Convert-All-IDE-Projects.ps1"
 $bridge = Join-Path $ideRoot "EngineBridge.ps1"
@@ -57,6 +62,33 @@ function Compile-Project {
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Honour War SPP source missing." }
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $compiler -Source $source -Output $output
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+
+# Native Sharnou source compilation is a separate path from SPP authoring.
+# It intentionally does not rewrite project metadata or compile the SPP manifest.
+if ($Command -eq "compile-native") {
+    if ([string]::IsNullOrWhiteSpace($NativeSource)) {
+        throw "compile-native requires -NativeSource <file.sharnou>."
+    }
+    if ([string]::IsNullOrWhiteSpace($NativeOutput)) {
+        throw "compile-native requires -NativeOutput <file.exe>."
+    }
+    if (-not (Test-Path -LiteralPath $nativeCompilerBridge -PathType Leaf)) {
+        throw "Sharnou native compiler bridge missing: $nativeCompilerBridge"
+    }
+
+    $nativeArguments = @(
+        "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+        "-File", $nativeCompilerBridge,
+        "-Source", $NativeSource,
+        "-Output", $NativeOutput
+    )
+    if (-not [string]::IsNullOrWhiteSpace($CompilerRoot)) {
+        $nativeArguments += @("-CompilerRoot", $CompilerRoot)
+    }
+
+    & powershell.exe @nativeArguments
+    exit $LASTEXITCODE
 }
 
 Validate-Contract
