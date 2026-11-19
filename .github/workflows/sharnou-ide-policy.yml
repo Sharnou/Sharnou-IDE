@@ -7,18 +7,35 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   policy:
     runs-on: windows-latest
     steps:
-      - name: Checkout
+      - name: Checkout Sharnou IDE
         uses: actions/checkout@v4
+
+      - name: Checkout pinned Sharnou Compiler source
+        uses: actions/checkout@v4
+        with:
+          repository: Sharnou/Sharnou-Compiler
+          ref: 352c65e05524d494970b2d8b52b7089d12d19435
+          path: Sharnou-Compiler
+
       - name: Validate IDE stack policy
         shell: powershell
         run: .\ci\sharnou-ide-policy.ps1
+
       - name: Test IDE and EngineBridge path resolution
         shell: powershell
         run: .\ci\test-sharnou-ide-paths.ps1
+
+      - name: Test IDE to Sharnou Compiler native bridge
+        shell: powershell
+        run: .\ci\test-sharnou-compiler-bridge.ps1 -CompilerRoot "$env:GITHUB_WORKSPACE\Sharnou-Compiler"
+
       - name: Validate AVIF-only visual policy
         shell: powershell
         run: .\ci\sharnou-avif-policy.ps1
