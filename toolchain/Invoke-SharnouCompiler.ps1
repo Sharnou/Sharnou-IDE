@@ -13,13 +13,16 @@ function Get-GitBlobSha1 {
 
     [byte[]]$raw = [IO.File]::ReadAllBytes($Path)
     $utf8 = [Text.UTF8Encoding]::new($false, $true)
-    $text = $utf8.GetString($raw)
-    if ($text.Length -gt 0 -and $text[0] -eq [char]0xFEFF) {
-        $text = $text.Substring(1)
+    if ($raw.Length -ge 3 -and $raw[0] -eq 0xEF -and $raw[1] -eq 0xBB -and $raw[2] -eq 0xBF) {
+        throw "Pinned compiler component contains a UTF-8 BOM: $Path"
     }
+    foreach ($byte in $raw) {
+        if ($byte -gt 127) { throw "Pinned compiler component is not ASCII: $Path" }
+    }
+    $text = $utf8.GetString($raw)
 
-    # Git stores text blobs with LF in this repository. Normalize Windows checkout
-    # line endings before computing the canonical Git blob object id.
+    # Git stores these source files with LF. Normalize checkout line endings only;
+    # do not strip or rewrite any other byte before computing the Git blob object id.
     $text = $text.Replace(([string][char]13 + [string][char]10), [string][char]10)
     $text = $text.Replace([string][char]13, [string][char]10)
     [byte[]]$contentBytes = $utf8.GetBytes($text)
