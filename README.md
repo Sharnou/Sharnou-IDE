@@ -89,3 +89,8 @@ The IDE must not silently download or install a compiler, SDK, IDE, build system
 The IDE may launch only an already-existing approved SharnouEngine runtime.
 
 A gameplay PASS requires actual executable runtime evidence; static policy validation is not gameplay evidence.
+
+
+## Production roadmap
+
+See [Docs/IDE-Roadmap.md](Docs/IDE-Roadmap.md) for the staged plan covering the native IDE application, compiler services, SPP/build orchestration, asset automation, Engine integration, debugging, profiling, packaging and acceptance gates.
