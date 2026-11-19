@@ -28,7 +28,7 @@ The IDE exposes this bridge through `src/SharnouIDE.ps1 -Command compile-native`
 Example (64-bit Windows PowerShell 5.1):
 
 ```powershell
-.\src\SharnouIDE.ps1 -Command compile-native -NativeSource .\Examples\ControlFlow\IfElse.sharnou -NativeOutput .\Build\IfElse.exe -CompilerRoot ..\Sharnou-Compiler
+.\src\SharnouIDE.ps1 -Command compile-native -NativeSource ..\Sharnou-Compiler\Examples\ControlFlow\IfElse.sharnou -NativeOutput .\Build\IfElse.exe -CompilerRoot ..\Sharnou-Compiler
 ```
 
 The current compiler is a PowerShell/.NET bootstrap that emits native x64 machine code. Its repository-verified language milestone is 7A: `if`, `else`, `while`, and signed integer comparisons. This is not yet a native self-hosted `SharnouCompiler.exe`; structs, pointers, arrays, function pointers, and a self-hosted compiler remain future work.
