@@ -23,7 +23,13 @@ The IDE now has an explicit, opt-in bridge for `.sharnou` source files:
 
 `toolchain/Invoke-SharnouCompiler.ps1`
 
-The bridge invokes the locally checked-out Sharnou Compiler Stage 0 bootstrap and then runs the compiler repository's independent PE verifier before publishing an AMD64 PE32+ executable. The compiler source and verifier are pinned by Git blob identity in `toolchain/sharnou-compiler.contract.json`; a changed or mismatched compiler checkout is rejected.
+The IDE exposes this bridge through `src/SharnouIDE.ps1 -Command compile-native`. It invokes the locally checked-out Sharnou Compiler Stage 0 bootstrap and then runs the compiler repository's independent PE verifier before publishing an AMD64 PE32+ executable. The compiler source and verifier are pinned by Git blob identity in `toolchain/sharnou-compiler.contract.json`; a changed or mismatched compiler checkout is rejected.
+
+Example (64-bit Windows PowerShell 5.1):
+
+```powershell
+.\src\SharnouIDE.ps1 -Command compile-native -NativeSource .\Examples\ControlFlow\IfElse.sharnou -NativeOutput .\Build\IfElse.exe -CompilerRoot ..\Sharnou-Compiler
+```
 
 The current compiler is a PowerShell/.NET bootstrap that emits native x64 machine code. Its repository-verified language milestone is 7A: `if`, `else`, `while`, and signed integer comparisons. This is not yet a native self-hosted `SharnouCompiler.exe`; structs, pointers, arrays, function pointers, and a self-hosted compiler remain future work.
 
