@@ -7,17 +7,20 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $ideRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$bridgePath = Join-Path $ideRoot 'toolchain/Invoke-SharnouCompiler.ps1'
+$ideEntry = Join-Path $ideRoot 'src/SharnouIDE.ps1'
 $compilerRootFull = [IO.Path]::GetFullPath($CompilerRoot)
 $example = Join-Path $compilerRootFull 'Examples/ControlFlow/IfElse.sharnou'
-if (-not (Test-Path -LiteralPath $bridgePath -PathType Leaf)) { throw "Compiler bridge is missing: $bridgePath" }
+if (-not (Test-Path -LiteralPath $ideEntry -PathType Leaf)) { throw "Sharnou IDE entry point is missing: $ideEntry" }
 if (-not (Test-Path -LiteralPath $example -PathType Leaf)) { throw "Pinned compiler example is missing: $example" }
 
 $testRoot = Join-Path ([IO.Path]::GetTempPath()) ('sharnou-ide-compiler-bridge-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force -Path $testRoot | Out-Null
 try {
     $outputPath = Join-Path $testRoot 'IfElse.exe'
-    & $bridgePath -CompilerRoot $compilerRootFull -Source $example -Output $outputPath
+    $powerShellPath = Join-Path $PSHOME 'powershell.exe'
+    & $powerShellPath -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $ideEntry -Command compile-native -NativeSource $example -NativeOutput $outputPath -CompilerRoot $compilerRootFull
+    $compileExitCode = $LASTEXITCODE
+    if ($compileExitCode -ne 0) { throw "Sharnou IDE compile-native command failed with exit code $compileExitCode." }
     if (-not (Test-Path -LiteralPath $outputPath -PathType Leaf)) {
         throw 'Compiler bridge did not publish the verified executable.'
     }
@@ -41,24 +44,16 @@ try {
     [IO.File]::WriteAllText($invalidSource, 'if 1 < 2 { print(1); }' + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
     [IO.File]::WriteAllBytes($preservedOutput, [Text.Encoding]::ASCII.GetBytes('PRESERVE-OLD-OUTPUT'))
     $beforeHash = (Get-FileHash -LiteralPath $preservedOutput -Algorithm SHA256).Hash
-    $rejected = $false
-    try {
-        & $bridgePath -CompilerRoot $compilerRootFull -Source $invalidSource -Output $preservedOutput
-    } catch {
-        $rejected = $true
-    }
-    if (-not $rejected) { throw 'Compiler bridge accepted invalid source unexpectedly.' }
+    & $powerShellPath -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $ideEntry -Command compile-native -NativeSource $invalidSource -NativeOutput $preservedOutput -CompilerRoot $compilerRootFull
+    $rejected = ($LASTEXITCODE -ne 0)
+    if (-not $rejected) { throw 'Sharnou IDE accepted invalid source unexpectedly.' }
     $afterHash = (Get-FileHash -LiteralPath $preservedOutput -Algorithm SHA256).Hash
     if ($afterHash -cne $beforeHash) { throw 'Rejected compilation overwrote the previous output.' }
     Write-Host 'PASS: failed compilation leaves the previous output unchanged.' -ForegroundColor Green
 
-    $wrongExtensionRejected = $false
-    try {
-        & $bridgePath -CompilerRoot $compilerRootFull -Source $example -Output (Join-Path $testRoot 'WrongOutput.bin')
-    } catch {
-        $wrongExtensionRejected = $true
-    }
-    if (-not $wrongExtensionRejected) { throw 'Compiler bridge accepted a non-EXE output extension.' }
+    & $powerShellPath -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $ideEntry -Command compile-native -NativeSource $example -NativeOutput (Join-Path $testRoot 'WrongOutput.bin') -CompilerRoot $compilerRootFull
+    $wrongExtensionRejected = ($LASTEXITCODE -ne 0)
+    if (-not $wrongExtensionRejected) { throw 'Sharnou IDE accepted a non-EXE output extension.' }
     Write-Host 'PASS: compiler bridge rejects output paths outside the PE32+ executable contract.' -ForegroundColor Green
 
     Write-Host 'Sharnou IDE compiler bridge tests: 3 passed, 0 failed.' -ForegroundColor Green
